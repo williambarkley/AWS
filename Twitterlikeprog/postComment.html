@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel="shortcut icon" href="https://abs.twimg.com/favicons/twitter.2.ico">
+  <title>Make a post</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+  <style>
+    body {
+      background-color: rgba(91, 112, 131, 0.4);
+    }
+
+    #post-button,
+    #profile-button {
+      width: 80px;
+    }
+  </style>
+  <script>
+    function getAWSKeys() {
+      var asd = $.get(
+        "https://w4ww2mmf45nwtqn7c56jgp4qey0lgcwd.lambda-url.us-east-1.on.aws/",
+        {},
+        function (data) {
+          var json = data;
+          //        json=JSON.parse(json);
+          document.getElementById("Policy").value = json.stringToSign;
+          document.getElementById("X-Amz-Credential").value = json.xAmzCredential;
+          document.getElementById("X-Amz-Date").value = json.amzDate;
+          document.getElementById("X-Amz-Signature").value = json.stringSigned;
+          document.getElementById("X-Amz-Security-Token").value = json.securityToken;
+        }
+      )
+
+    }
+    function getCookie(name) {
+      var value = "; " + document.cookie;
+      var parts = value.split("; " + name + "=");
+      if (parts.length == 2) return parts.pop().split(";").shift();
+    }
+
+    function checkUser() {
+      var username = getCookie("name");
+      var password = getCookie("pass");
+      // Send a POST request to the server to check if the user exists
+      $.post("https://ols7h6w5v6xejubyyvqok7gani0witgs.lambda-url.us-east-1.on.aws/", { username: username, password: password }, function (response) {
+        if (!response.exists) {
+          window.location.href = "https://nuevbucket.s3.us-east-1.amazonaws.com/login.html";
+        }
+      })
+    }
+
+    function setKeyFilename() {
+      alert("Enviando!");
+
+      var user = getCookie("name"); // cambiarlo con cookie_get() y cookie_set()
+      document.getElementById("key").value = user + document.getElementById("file").value.substring(document.getElementById("file").value.lastIndexOf('\\') + 1);
+
+      var post = document.getElementById("post").value;
+      var file = document.getElementById("key").value;
+      // seguridad: validar cookies con lambda para ver si es valido, sino redireccionar al login
+      // var user = "userPrueba";
+
+      var sendPost = $.post(
+        "https://ffbmask5tw4irrcz3aoo4agpsi0gwyra.lambda-url.us-east-1.on.aws/",
+
+        { user: user, comment: post, attachment: file },
+        function (data) {
+          function jsonEscape(str) {
+            return str.replace(/\n/g, "\\\\n").replace(/\r/g, "\\\\r").replace(/\t/g, "\\\\t").replace(/\\/g, "");
+          }
+
+          var json = data;
+          // alert('resultado ' + JSON.stringify(json));
+        }
+      )
+      /*      .done(function() {
+              alert( "second success" );
+            })
+            .fail(function(xhr, status, error) {
+              alert( error );
+            })
+            
+          sendPost.always(function() {
+          alert( "second finished" );
+          });
+      */
+    }
+  </script>
+</head>
+
+<body onload="getAWSKeys()">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+      <svg viewBox="0 0 24 24" aria-label="Twitter" id="logo" role="img" width="30" height="30">
+        <g>
+          <path fill="#fff"
+            d="M23.643 4.937c-.835.37-1.732.62-2.675.733.962-.576 1.7-1.49 2.048-2.578-.9.534-1.897.922-2.958 1.13-.85-.904-2.06-1.47-3.4-1.47-2.572 0-4.658 2.086-4.658 4.66 0 .364.042.718.12 1.06-3.873-.195-7.304-2.05-9.602-4.868-.4.69-.63 1.49-.63 2.342 0 1.616.823 3.043 2.072 3.878-.764-.025-1.482-.234-2.11-.583v.06c0 2.257 1.605 4.14 3.737 4.568-.392.106-.803.162-1.227.162-.3 0-.593-.028-.877-.082.593 1.85 2.313 3.198 4.352 3.234-1.595 1.25-3.604 1.995-5.786 1.995-.376 0-.747-.022-1.112-.065 2.062 1.323 4.51 2.093 7.14 2.093 8.57 0 13.255-7.098 13.255-13.254 0-.2-.005-.402-.014-.602.91-.658 1.7-1.477 2.323-2.41z">
+          </path>
+        </g>
+      </svg>
+    </div>
+    <button type="button" id="profile-button" class="btn btn-light ml-2">Profile</button>
+    <button type="button" id="post-button" class="btn btn-light ml-2">Post</button>
+    </div>
+  </nav>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6 offset-md-3 mt-5">
+        <div class="card text-center m-4 p-4">
+          <textarea id="post" name="post" placeholder="What's happening?" class="form-control bg-light text-dark"
+            rows="5" cols="33"></textarea>
+          <form action="https://nuevbucket.s3.us-east-1.amazonaws.com" onsubmit="setKeyFilename()" method="post"
+            enctype="multipart/form-data">
+            <input type="hidden" id="X-Amz-Credential" name="X-Amz-Credential" value="" />
+            <input type="hidden" id="X-Amz-Date" name="X-Amz-Date" value="" />
+            <input type="hidden" id="Policy" name="Policy" value="" />
+            <input type="hidden" id="X-Amz-Signature" name="X-Amz-Signature" value="" />
+            <input type="hidden" id="key" name="key" value="fichero.sln" /><br />
+            <input type="hidden" name="acl" value="public-read" />
+            <input type="hidden" name="success_action_redirect"
+              value="https://nuevbucket.s3.us-east-1.amazonaws.com/success.html" />
+            <input type="hidden" name="X-Amz-Algorithm" value="AWS4-HMAC-SHA256" />
+            <input type="hidden" id="X-Amz-Security-Token" name="X-Amz-Security-Token" value="" />
+            <div class="container">
+              <div class="row">
+                <div class="col-6 text-left">
+                  <svg id="file-input-button" viewBox="0 0 24 24" aria-hidden="true" width="30" height="30">
+                    <g>
+                      <path fill="#1d9bf0" ;
+                        d="M3 5.5C3 4.119 4.119 3 5.5 3h13C19.881 3 21 4.119 21 5.5v13c0 1.381-1.119 2.5-2.5 2.5h-13C4.119 21 3 19.881 3 18.5v-13zM5.5 5c-.276 0-.5.224-.5.5v9.086l3-3 3 3 5-5 3 3V5.5c0-.276-.224-.5-.5-.5h-13zM19 15.414l-3-3-5 5-3-3-3 3V18.5c0 .276.224.5.5.5h13c.276 0 .5-.224.5-.5v-3.086zM9.75 7C8.784 7 8 7.784 8 8.75s.784 1.75 1.75 1.75 1.75-.784 1.75-1.75S10.716 7 9.75 7z">
+                      </path>
+                    </g>
+                  </svg>
+                  <input type="file" name="file" id="file" accept="video/mp4,image/png" style="display:none" />
+                </div>
+                <div class="col-6 text-right">
+                  <input type="submit" class="btn btn-dark ml-2" value="Tweet" name="submit">
+                </div>
+              </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+
+</body>
+<script>
+  const svgButton = document.getElementById("file-input-button");
+  const fileInput = document.getElementById("file");
+
+  svgButton.addEventListener("click", function () {
+    fileInput.click();
+  });
+  var postButton = document.getElementById("post-button");
+  postButton.addEventListener("click", function () {
+    // Redirect the user to a different page
+    window.location.assign("https://nuevbucket.s3.us-east-1.amazonaws.com/postComment.html");
+  });
+
+  var profileButton = document.getElementById("profile-button");
+  profileButton.addEventListener("click", function () {
+    // Redirect the user to a different page
+    window.location.assign("https://nuevbucket.s3.us-east-1.amazonaws.com/readPosts.html");
+  });
+
+  var logo = document.getElementById("logo");
+  logo.addEventListener("click", function () {
+    // Redirect the user to a different page
+    window.location.assign("https://nuevbucket.s3.us-east-1.amazonaws.com/home.html");
+  });
+
+  $(document).ready(function () {
+    checkUser();
+  });
+</script>
+
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="shortcut icon" href="https://abs.twimg.com/favicons/twitter.2.ico">
+
+    <title>Sign Up to Twitter</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="shortcut icon" href="https://abs.twimg.com/favicons/twitter.2.ico">
+    <style>
+        body {
+            background-color: rgba(91, 112, 131, 0.4);
+        }
+    </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+        function getAWSKeys() {
+            var asd = $.get(
+                "https://w4ww2mmf45nwtqn7c56jgp4qey0lgcwd.lambda-url.us-east-1.on.aws/",
+                {},
+                function (data) {
+                    var json = data;
+                    //        json=JSON.parse(json);
+                    document.getElementById("Policy").value = json.stringToSign;
+                    document.getElementById("X-Amz-Credential").value = json.xAmzCredential;
+                    document.getElementById("X-Amz-Date").value = json.amzDate;
+                    document.getElementById("X-Amz-Signature").value = json.stringSigned;
+                    document.getElementById("X-Amz-Security-Token").value = json.securityToken;
+                }
+            )
+        }
+
+        function registerUser() {
+            var username = $("#username").val();
+            var email = $("#email").val();
+            var password = $("#password").val();
+            var recovery_phrase = $("#recovery_phrase").val();
+            var biography = $("#biography").val();
+            if (document.getElementById("file").value == "") {
+                $.post("https://324h3wqybzs3qxhqyft7zvskim0fsnqv.lambda-url.us-east-1.on.aws/", { username: username, email: email, password: password, recovery_phrase: recovery_phrase, biography: biography }, function (data, status) {
+                    if (status !== "success") {
+                        alert("There was an error. Please try again in some minutes.");
+                    }
+                });
+            } else {
+                document.getElementById("key").value = username + document.getElementById("file").value.substring(document.getElementById("file").value.lastIndexOf('\\') + 1);
+                var avatar = document.getElementById("key").value;
+                $.post("https://324h3wqybzs3qxhqyft7zvskim0fsnqv.lambda-url.us-east-1.on.aws/", { avatar: avatar, username: username, email: email, password: password, recovery_phrase: recovery_phrase, biography: biography }, function (data, status) {
+                    if (status !== "success") {
+                        alert("There was an error. Please try again in some minutes.");
+                    }
+                });
+            }
+        }
+    </script>
+</head>
+
+<body onload="getAWSKeys()">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <div class="card bg-dark shadow">
+                    <div class="card-header border-secondary text-white font-weight-bold">
+                        <div class="col-sm-3 mb-2 mx-auto">
+                            <svg viewBox="0 0 24 24" aria-label="Twitter" role="img">
+                                <g>
+                                    <path fill="#fff"
+                                        d="M23.643 4.937c-.835.37-1.732.62-2.675.733.962-.576 1.7-1.49 2.048-2.578-.9.534-1.897.922-2.958 1.13-.85-.904-2.06-1.47-3.4-1.47-2.572 0-4.658 2.086-4.658 4.66 0 .364.042.718.12 1.06-3.873-.195-7.304-2.05-9.602-4.868-.4.69-.63 1.49-.63 2.342 0 1.616.823 3.043 2.072 3.878-.764-.025-1.482-.234-2.11-.583v.06c0 2.257 1.605 4.14 3.737 4.568-.392.106-.803.162-1.227.162-.3 0-.593-.028-.877-.082.593 1.85 2.313 3.198 4.352 3.234-1.595 1.25-3.604 1.995-5.786 1.995-.376 0-.747-.022-1.112-.065 2.062 1.323 4.51 2.093 7.14 2.093 8.57 0 13.255-7.098 13.255-13.254 0-.2-.005-.402-.014-.602.91-.658 1.7-1.477 2.323-2.41z">
+                                    </path>
+                                </g>
+                            </svg>
+                        </div>
+                        <h3>Join Twitter Today</h3>
+                    </div>
+                    <div class="card-body text-white">
+                        <form action="https://nuevbucket.s3.us-east-1.amazonaws.com" onsubmit="registerUser()"
+                            method="post" enctype="multipart/form-data">
+                            <img id="default-avatar" src="https://nuevbucket.s3.us-east-1.amazonaws.com/default.jpg"
+                                style="display:none">
+                            <input type="hidden" id="X-Amz-Credential" name="X-Amz-Credential" value="" />
+                            <input type="hidden" id="X-Amz-Date" name="X-Amz-Date" value="" />
+                            <input type="hidden" id="Policy" name="Policy" value="" />
+                            <input type="hidden" id="X-Amz-Signature" name="X-Amz-Signature" value="" />
+                            <input type="hidden" id="key" name="key" value="fichero.sln" /><br />
+                            <input type="hidden" name="acl" value="public-read" />
+                            <input type="hidden" name="success_action_redirect"
+                                value="https://nuevbucket.s3.us-east-1.amazonaws.com/success.html" />
+                            <input type="hidden" name="X-Amz-Algorithm" value="AWS4-HMAC-SHA256" />
+                            <input type="hidden" id="X-Amz-Security-Token" name="X-Amz-Security-Token" value="" />
+                            <div class="form-group">
+                                <span>Avatar </span>
+                                <svg id="file-input-button" viewBox="0 0 24 24" aria-hidden="true" width="30"
+                                    height="30">
+                                    <g>
+                                        <path fill="#fff" ;
+                                            d="M3 5.5C3 4.119 4.119 3 5.5 3h13C19.881 3 21 4.119 21 5.5v13c0 1.381-1.119 2.5-2.5 2.5h-13C4.119 21 3 19.881 3 18.5v-13zM5.5 5c-.276 0-.5.224-.5.5v9.086l3-3 3 3 5-5 3 3V5.5c0-.276-.224-.5-.5-.5h-13zM19 15.414l-3-3-5 5-3-3-3 3V18.5c0 .276.224.5.5.5h13c.276 0 .5-.224.5-.5v-3.086zM9.75 7C8.784 7 8 7.784 8 8.75s.784 1.75 1.75 1.75 1.75-.784 1.75-1.75S10.716 7 9.75 7z">
+                                        </path>
+                                    </g>
+                                </svg>
+                                <input type="file" name="file" id="file" accept="image/png" style="display:none" />
+                            </div>
+                            <div class="form-group">
+                                <input type="text" placeholder="Username" name="username" id="username"
+                                    class="form-control text-white bg-dark border-secondary" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="password" placeholder="Password" name="password" id="password"
+                                    class="form-control text-white bg-dark border-secondary" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="email" placeholder="Email" name="email" id="email"
+                                    class="form-control text-white bg-dark border-secondary" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="recovery_phrase" placeholder="Recovery Phrase" name="recovery_phrase"
+                                    id="recovery_phrase" class="form-control text-white bg-dark border-secondary"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <textarea type="biography" placeholder="Biography" name="biography" id="biography"
+                                    class="form-control text-white bg-dark border-secondary" required></textarea>
+                            </div>
+                            <button type="submit" class="btn bg-white btn-block">Sign up</button>
+                        </form>
+                    </div>
+                    <div class="card-footer border-secondary text-secondary text-center">
+                        Have an account already?
+                        <a href="https://nuevbucket.s3.us-east-1.amazonaws.com/login.html"
+                            class="font-weight-bold text-white">Log in</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    const svgButton = document.getElementById("file-input-button");
+    const fileInput = document.getElementById("file");
+
+    svgButton.addEventListener("click", function () {
+        fileInput.click();
+    });
+</script>
+
+</html>
